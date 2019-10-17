@@ -6,16 +6,31 @@ namespace RoverTransmitter
     {
         static void Main(string[] args)
         {
-            var boundary = new Bounds(100, 200);
-            var initialCoordinates = new Coordinates(boundary.Width/2, boundary.Height/2);
-            
-            var opportunity = new Rover(boundary, initialCoordinates, OrientationEnum.North);
+            var widthSize = 25;
+            var heightSize = 25;
+            var RoverPositionX = 25;
+            var RoverPositionY = 25;
+            var initialOrientation = OrientationEnum.North;
+            var commandString = "AALAARALADSDADAADSADADAE";
 
-            var commandSet = new CommandSet("AALAARALA");
+            var boundary = new Bounds(widthSize, heightSize);
+            var initialCoordinates = new Coordinates(RoverPositionX, RoverPositionY);            
+            var opportunity = new Rover(boundary, initialCoordinates, initialOrientation);
 
+            opportunity.OnProcessCommandExecuted += (info) =>
+            {
+                Console.WriteLine(info);
+            };
+
+            opportunity.OnNotValidCommand += (info) =>
+            {
+                Console.WriteLine(info);
+            };
+                        
+            var commandSet = new CommandSet(commandString);
             opportunity.ProcessCommands(commandSet);
-
             opportunity.GetCoordinates();
+            Console.ReadLine();
         }
     }
 }
