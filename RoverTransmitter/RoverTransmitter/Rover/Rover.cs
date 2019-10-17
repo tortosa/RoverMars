@@ -11,7 +11,7 @@ namespace RoverTransmitter
         private OrientationEnum orientation;
 
         public event OnProcessCommand OnProcessCommandExecuted;
-        public delegate void OnProcessCommand(string info);
+        public delegate void OnProcessCommand(Rover rover, string info);
 
         public event OnNotValidProcessCommand OnNotValidCommand;
         public delegate void OnNotValidProcessCommand(string info);
@@ -85,6 +85,11 @@ namespace RoverTransmitter
             return this.coordinates;
         }
 
+        public Bounds GetBounds()
+        {
+            return this.bounds;
+        }
+
         public OrientationEnum GetOrientation()
         {
             return orientation;
@@ -114,7 +119,7 @@ namespace RoverTransmitter
                     break;
             }
 
-            OnProcessCommandExecuted?.Invoke(GetInfo());
+            OnProcessCommandExecuted?.Invoke(this, GetInfo());
             return IsInsideBounds();
         }
 
