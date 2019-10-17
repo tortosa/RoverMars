@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using System;
+using System.Text;
 
 namespace RoverTransmitter
 {
@@ -8,29 +10,19 @@ namespace RoverTransmitter
         private Coordinates coordinates;
         private OrientationEnum orientation;
 
+        public event OnProcessCommand OnProcessCommandExecuted;
+        public delegate void OnProcessCommand(string info);
+
+        public event OnNotValidProcessCommand OnNotValidCommand;
+        public delegate void OnNotValidProcessCommand(string info);
+
         public Rover(Bounds initialBounds, Coordinates initialCoordinates, OrientationEnum initialOrientation)
         {
             bounds = initialBounds;
             coordinates = initialCoordinates;
             orientation = initialOrientation;
-        }
-
-        public Coordinates GetCoordinates()
-        {
-            return this.coordinates;
-        }
-
-        public OrientationEnum GetOrientation()
-        {
-            return orientation;
-        }
-
-        public bool IsInsideBounds()
-        {
-            var insideX = (coordinates.X >= 0 || coordinates.X <= bounds.Width);
-            var insideY = (coordinates.Y >= 0 || coordinates.Y <= bounds.Height);
-
-            return insideX && insideY;
+            if (!IsInsideBounds())
+                throw new Exception("Rover must be deployed inside the boundary");
         }
 
         private void MoveForward()
@@ -54,7 +46,6 @@ namespace RoverTransmitter
                     break;
             }
 
-
             if (!IsInsideBounds())
             {
                 coordinates.Y = y;
@@ -75,6 +66,38 @@ namespace RoverTransmitter
             }
         }
 
+        private string GetInfo()
+        {
+            StringBuilder infoBuilder = new StringBuilder(string.Empty);
+            infoBuilder.Append(IsInsideBounds().ToString());
+            infoBuilder.Append(", ");
+            infoBuilder.Append(Enum.GetName(orientation.GetType(), orientation));
+            infoBuilder.Append(", (");
+            infoBuilder.Append(coordinates?.X.ToString());
+            infoBuilder.Append(", ");
+            infoBuilder.Append(coordinates?.Y.ToString());
+            infoBuilder.Append(")");
+            return infoBuilder.ToString();
+        }
+
+        public Coordinates GetCoordinates()
+        {
+            return this.coordinates;
+        }
+
+        public OrientationEnum GetOrientation()
+        {
+            return orientation;
+        }
+
+        public bool IsInsideBounds()
+        {
+            var insideX = (coordinates.X >= 0 && coordinates.X <= bounds.Width);
+            var insideY = (coordinates.Y >= 0 && coordinates.Y <= bounds.Height);
+
+            return insideX && insideY;
+        }
+
         public bool ProcessCommand(CommandEnum command)
         {
             switch (command)
@@ -87,15 +110,17 @@ namespace RoverTransmitter
                     Rotate(command);
                     break;
                 case CommandEnum.NotValid:
+                    OnNotValidCommand?.Invoke(Enum.GetName(command.GetType(), command) + " command executed");
                     break;
             }
 
+            OnProcessCommandExecuted?.Invoke(GetInfo());
             return IsInsideBounds();
         }
 
         public void ProcessCommands(CommandSet commandSet)
         {
-            foreach(var command in commandSet.Commands)
+            foreach (var command in commandSet.Commands)
             {
                 var isProcessed = ProcessCommand(command);
             }
