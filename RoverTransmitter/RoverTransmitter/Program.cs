@@ -6,7 +6,16 @@ namespace RoverTransmitter
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Curiosity!");
+            var boundary = new Bounds(100, 200);
+            var initialCoordinates = new Coordinates(boundary.Width/2, boundary.Height/2);
+            
+            var opportunity = new Rover(boundary, initialCoordinates, OrientationEnum.North);
+
+            var commandSet = new CommandSet("AALAARALA");
+
+            opportunity.ProcessCommands(commandSet);
+
+            opportunity.GetCoordinates();
         }
     }
 }
