@@ -6,7 +6,10 @@ namespace RoverTransmitter
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Curiosity!");
+
+            var opportunity = new Rover();
+            
+            
         }
     }
 }
