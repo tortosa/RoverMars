@@ -6,9 +6,7 @@ namespace RoverTransmitter
 {
     public interface IRover
     {
-        public void ProcessCommands(string commands);
-
-        public Orientation GetOrientation();
+        public OrientationEnum GetOrientation();
 
         public Coordinates GetCoordinates();
 

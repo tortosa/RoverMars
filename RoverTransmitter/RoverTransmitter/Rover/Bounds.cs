@@ -12,7 +12,7 @@ namespace RoverTransmitter
             this.Height = height;
         }
 
-        public int Width { get; protected set; }
-        public int Height { get; protected set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 }
